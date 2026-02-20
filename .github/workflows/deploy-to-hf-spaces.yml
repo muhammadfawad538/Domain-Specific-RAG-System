@@ -3,8 +3,6 @@ name: Deploy to Hugging Face Spaces
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   sync-to-huggingface-spaces:
@@ -13,17 +11,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Hugging Face CLI
-        uses: huggingface-actions/setup-huggingface-cli@v1
-        with:
-          token: ${{ secrets.HF_TOKEN }}
-
-      - name: Sync to Hugging Face Spaces
-        uses: huggingface-actions/sync-to-huggingface-space@v1
+      - name: Push to Hugging Face Hub
+        uses: nateraw/huggingface-cli-action@v0.0.5
         with:
           hf_token: ${{ secrets.HF_TOKEN }}
           repo_id: ${{ secrets.HF_SPACE_NAME }}
           repo_type: space
-          space_hardware: cpu-basic # Change this if you need different hardware
