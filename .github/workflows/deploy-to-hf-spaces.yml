@@ -2,19 +2,29 @@ name: Deploy to Hugging Face Spaces
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  sync-to-huggingface-spaces:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Push to Hugging Face Hub
-        uses: nateraw/huggingface-cli-action@v0.0.5
-        with:
-          hf_token: ${{ secrets.HF_TOKEN }}
-          repo_id: ${{ secrets.HF_SPACE_NAME }}
-          repo_type: space
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Hugging Face Hub
+        run: pip install huggingface_hub
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions"
+
+          git clone https://user:$HF_TOKEN@huggingface.co/spaces/${{ secrets.HF_SPACE_NAME }} space
+          rsync -av --exclude ".git" ./ space/
+          cd space
+          git add .
+          git commit -m "Update from GitHub" || exit 0
+          git push
