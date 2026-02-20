@@ -53,9 +53,13 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+
+    # Use PORT environment variable if available (for Hugging Face Spaces)
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run(
         "src.api.main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True
+        port=port,
+        reload=True if port == 8000 else False  # Disable reload in production
     )
