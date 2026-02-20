@@ -1,0 +1,35 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  sync-to-huggingface-spaces:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        if: ${{ hashFiles('requirements.txt') != '' }}
+
+      - name: Sync to Hugging Face Spaces
+        uses: huggingface/hub-actions@v0.1.1
+        with:
+          hf_token: ${{ secrets.HF_TOKEN }}
+          repo_id: ${{ secrets.HF_SPACE_NAME }}
+          repo_type: space
+          space_hardware: cpu-basic # Change this if you need different hardware
