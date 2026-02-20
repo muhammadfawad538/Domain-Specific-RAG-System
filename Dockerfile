@@ -19,13 +19,10 @@ RUN apt-get update \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt gradio
 
-# Install Gradio for Hugging Face Spaces interface
-RUN pip install gradio
-
-# Download spaCy English model
-RUN python -m spacy download en_core_web_sm
+# Download spaCy English model if needed (can be removed to speed up)
+# RUN python -m spacy download en_core_web_sm
 
 # Copy project
 COPY . .

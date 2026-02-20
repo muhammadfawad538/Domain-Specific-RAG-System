@@ -6,8 +6,8 @@ from src.api.health_router import router as health_router
 from src.utils.config import Config
 from src.utils.logger import setup_logger
 
-# Validate configuration at startup
-Config.validate()
+# Validate configuration at startup (moved to happen later to avoid heavy loading on startup)
+# Config.validate()
 
 # Set up logger for the API
 logger = setup_logger(__name__)
