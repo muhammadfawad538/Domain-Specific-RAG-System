@@ -1,3 +1,15 @@
+---
+title: Domain-Specific RAG System
+emoji: 🤖
+colorFrom: blue
+colorTo: yellow
+sdk: docker
+sdk_version: "latest"
+python_version: "3.11"
+app_file: src/api/main.py
+pinned: false
+---
+
 # Domain-Specific Retrieval-Augmented Generation System
 
 A domain-restricted Retrieval-Augmented Generation (RAG) system designed for medical and legal research that answers queries using only verified and curated documents while providing precise, traceable citations.
