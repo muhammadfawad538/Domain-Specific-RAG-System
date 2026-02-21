@@ -1,55 +1,52 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: 1.0.0 → 1.0.0 (initial creation)
+- List of modified principles: None (new constitution)
+- Added sections: All sections as this is the first version
+- Removed sections: None
+- Templates requiring updates: None (this is the initial version)
+- Follow-up TODOs: None
+-->
+# Domain-Specific Retrieval-Augmented Generation for Medical & Legal Research Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Evidence First (NON-NEGOTIABLE)
+Every generated statement must originate from retrieved documents. No unsupported knowledge generation is allowed.
+This principle ensures that the system remains grounded in verified evidence and prevents hallucinations by requiring all generated content to be traceable to specific source documents.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Citation Required (NON-NEGOTIABLE)
+All answers must include source attribution. Claims without citations must be rejected.
+This principle provides transparency by requiring all responses to include proper attribution to the source documents that support the information provided.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Domain Restriction (NON-NEGOTIABLE)
+Responses must rely ONLY on curated medical or legal sources. External knowledge or model memory must not override retrieved evidence.
+This principle maintains the integrity of the system by restricting responses to vetted domain-specific sources, preventing contamination from general web knowledge or model bias.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Safety Over Completeness (NON-NEGOTIABLE)
+If sufficient verified evidence is unavailable, respond: "Insufficient verified evidence available." Never guess.
+This principle prioritizes safety and accuracy over providing incomplete or potentially incorrect information when proper evidence is not available.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Agent-Governed Validation (NON-NEGOTIABLE)
+The system follows an agent-controlled RAG pipeline with independent validation stages: Query Classification, Retrieval from vetted corpus, Evidence Validation, Answer Generation, Citation Audit, and Safety Review. Each stage must be independently verifiable.
+This principle ensures comprehensive validation through multiple independent verification stages, preventing any single point of failure in the validation process.
 
-### [PRINCIPLE_6_NAME]
+### Data Source Authority (NON-NEGOTIABLE)
+Only approved sources are allowed: Medical textbooks, peer-reviewed guidelines, clinical standards, legal statutes, court decisions, and official regulatory publications. Prohibited sources include: Blogs, forums, unverified web content, and AI-generated documents.
+This principle maintains the credibility of the system by restricting input to authoritative, peer-reviewed sources while explicitly excluding unreliable sources.
 
+## Development Guidelines
+Code Quality requirements: Modular agent-based architecture, clear separation between retrieval and generation, deterministic prompts where possible, reproducibility of all experiments, versioning of datasets and embeddings, observability with structured logging of retrieved chunks, citation mappings, validation decisions, and safety flags.
 
-[PRINCIPLE__DESCRIPTION]
+## AI Behavior Constraints
+The AI MUST NOT provide diagnosis or legal rulings, invent citations, summarize outside retrieved context, or override validation agents. The AI SHOULD explain uncertainty, prefer precision over verbosity, and highlight conflicting sources.
+These constraints ensure the system operates within appropriate boundaries and maintains professional responsibility.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Subagent Governance
+Subagents act as independent auditors with specific responsibilities: Query Classifier (domain routing), Retrieval Investigator (relevance validation), Evidence Validator (source authority check), Citation Auditor (claim verification), and Safety Reviewer (risk prevention). No single agent may bypass another validation stage.
+This governance model ensures comprehensive validation through specialized, independent review processes.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This constitution supersedes all other development practices and guidelines. All changes affecting retrieval logic, citation rules, safety constraints, or domain scope require review and documentation update. The system success is measured by citation accuracy, retrieval relevance, hallucination rate, expert validation feedback, and safety compliance.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-02-19 | **Last Amended**: 2026-02-19

@@ -1,0 +1,334 @@
+openapi: 3.0.0
+info:
+  title: Domain-Specific RAG System API
+  description: API for the Domain-Specific Retrieval-Augmented Generation system for medical and legal research
+  version: 1.0.0
+  license:
+    name: MIT
+    url: 'http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT'
+servers:
+  - url: 'http://localhost:8000'
+    description: Development server
+  - url: 'https://api.rag-system.com'
+    description: Production server
+paths:
+  /query:
+    post:
+      summary: Submit a natural language query to the RAG system
+      description: Submit a query to be processed by the RAG system with evidence-based response and citations
+      operationId: submitQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Successful response with evidence-backed answer and citations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Invalid query format or insufficient evidence available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /upload:
+    post:
+      summary: Upload a document to the knowledge base
+      description: Upload a medical or legal document to be included in the RAG system's knowledge base
+      operationId: uploadDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+      responses:
+        '200':
+          description: Document successfully uploaded and queued for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          description: Invalid document format or upload error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /documents:
+    get:
+      summary: List all documents in the knowledge base
+      description: Retrieve a list of all documents currently in the system's knowledge base
+      operationId: listDocuments
+      responses:
+        '200':
+          description: List of documents in the knowledge base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentsListResponse'
+  /health:
+    get:
+      summary: Check system health status
+      description: Verify that all system components are operational
+      operationId: checkHealth
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+components:
+  schemas:
+    QueryRequest:
+      type: object
+      required:
+        - query
+        - user_id
+      properties:
+        query:
+          type: string
+          description: The natural language question to be answered
+          example: "What are the current medical guidelines for diabetes treatment?"
+        user_id:
+          type: string
+          description: Unique identifier for the user making the query
+          example: "user_12345"
+        domain:
+          type: string
+          description: Optional domain specification ('medical', 'legal')
+          example: "medical"
+    QueryResponse:
+      type: object
+      required:
+        - id
+        - query_id
+        - content
+        - status
+        - citations
+        - created_at
+        - disclaimer
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the response
+          example: "resp_67890"
+        query_id:
+          type: string
+          description: Reference to the original query
+          example: "query_12345"
+        content:
+          type: string
+          description: The evidence-backed response content
+          example: "According to the American Diabetes Association guidelines..."
+        status:
+          type: string
+          enum: [complete, insufficient_evidence, rejected]
+          description: Status of the response
+          example: "complete"
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Confidence score in the response
+          example: 0.85
+        created_at:
+          type: string
+          format: date-time
+          description: When the response was generated
+          example: "2026-02-19T10:30:00Z"
+        disclaimer:
+          type: string
+          description: Safety disclaimer for medical/legal information
+          example: "This information is for research purposes only and should not be used as medical advice. Consult with a qualified healthcare professional for medical decisions."
+    Citation:
+      type: object
+      required:
+        - id
+        - document_id
+        - claim_text
+        - citation_text
+        - confidence
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the citation
+          example: "cite_11111"
+        document_id:
+          type: string
+          description: Reference to the source document
+          example: "doc_22222"
+        claim_text:
+          type: string
+          description: The text in the response that is being cited
+          example: "the American Diabetes Association recommends HbA1c levels below 7%"
+        citation_text:
+          type: string
+          description: The corresponding text in the source document
+          example: "For most nonpregnant adults with diabetes, the American Diabetes Association recommends HbA1c levels below 7% to reduce the risk of microvascular complications."
+        document_title:
+          type: string
+          description: Title of the source document
+          example: "Standards of Medical Care in Diabetes—2026"
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Confidence in the citation's accuracy
+          example: 0.92
+    UploadRequest:
+      type: object
+      required:
+        - file
+        - domain
+        - title
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The document file to upload (PDF or text)
+        domain:
+          type: string
+          enum: [medical, legal]
+          description: The domain of the document
+          example: "medical"
+        title:
+          type: string
+          description: Title of the document
+          example: "Clinical Guidelines for Hypertension Management"
+        author:
+          type: string
+          description: Author of the document
+          example: "American Heart Association"
+        year:
+          type: integer
+          description: Publication year of the document
+          example: 2026
+    UploadResponse:
+      type: object
+      required:
+        - document_id
+        - message
+        - status
+      properties:
+        document_id:
+          type: string
+          description: Unique identifier for the uploaded document
+          example: "doc_33333"
+        message:
+          type: string
+          description: Status message
+          example: "Document uploaded successfully and queued for processing"
+        status:
+          type: string
+          enum: [success, processing, failed]
+          description: Status of the upload
+          example: "success"
+    DocumentsListResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        total:
+          type: integer
+          description: Total number of documents
+          example: 42
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the document
+          example: "doc_33333"
+        title:
+          type: string
+          description: Title of the document
+          example: "Clinical Guidelines for Hypertension Management"
+        author:
+          type: string
+          description: Author of the document
+          example: "American Heart Association"
+        publication:
+          type: string
+          description: Publication source or venue
+          example: "Journal of the American Heart Association"
+        year:
+          type: integer
+          description: Publication year
+          example: 2026
+        domain:
+          type: string
+          enum: [medical, legal, mixed]
+          description: Domain classification
+          example: "medical"
+        chunk_count:
+          type: integer
+          description: Number of semantic chunks derived from the document
+          example: 15
+        created_at:
+          type: string
+          format: date-time
+          description: When the document was added to the system
+          example: "2026-02-18T15:30:00Z"
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unavailable]
+          description: Overall health status
+          example: "healthy"
+        components:
+          type: object
+          additionalProperties:
+            type: string
+            enum: [healthy, degraded, unavailable]
+          description: Health status of individual components
+          example:
+            query_classifier: "healthy"
+            retrieval_investigator: "healthy"
+            evidence_validator: "healthy"
+            citation_auditor: "healthy"
+            safety_reviewer: "healthy"
+            vector_db: "healthy"
+            document_storage: "healthy"
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "QUERY_FAILED"
+        message:
+          type: string
+          description: Error description
+          example: "The query could not be processed due to insufficient evidence in the knowledge base."
+        details:
+          type: object
+          description: Additional error details
+          example:
+            query_id: "query_12345"
+            reason: "No relevant documents found for the query"
